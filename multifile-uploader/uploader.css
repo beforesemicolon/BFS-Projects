@@ -1,0 +1,247 @@
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	background: #e9ecee;
+}
+
+button {
+	outline: none;
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.upload-btn {
+	background: #607D8B;
+	color: #fff;
+	border-radius: 5px;
+	padding: 15px 20px;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+	font-weight: bold;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.upload-progress-tracker {
+	background: #ffffff linear-gradient(45deg, #f4edff, #efffef) left center/100% 100% no-repeat;
+	width: 400px;
+	border-radius: 10px;
+	box-shadow: 0 5px 35px #cdcdcd;
+	padding: 25px;
+	color: #565252;
+	position: relative;
+	margin: 50px 0;
+	transition: background 0.3s ease;
+}
+
+.upload-progress-tracker h3 {
+	margin: 0;
+	font-size: 1em;
+	font-weight: normal;
+	color: #222;
+}
+
+.upload-progress-tracker .upload-progress {
+	margin: 10px 0 0;
+	font-size: 0.8em;
+	color: #617e8c;
+}
+
+.upload-progress-tracker .upload-progress span {
+	width: 30px;
+	padding-right: 15px;
+}
+
+.upload-progress-tracker .upload-progress span.success-count {
+	margin-left: 10px;
+	background: url("./assets/completed-indicator.svg") 5px 100%/100% 100% no-repeat;
+}
+
+.upload-progress-tracker .upload-progress span.failed-count {
+	background: url("./assets/failed-indicator.svg") 5px 100%/100% 100% no-repeat;
+}
+
+.upload-progress-tracker .upload-progress span.paused-count {
+	background: url("./assets/paused-indicator.svg") 5px 100%/100% 100% no-repeat;
+}
+
+.upload-progress-tracker .maximize-btn {
+	position: absolute;
+	right: 25px;
+	top: 35px;
+	width: 20px;
+	height: 20px;
+	overflow: hidden;
+	text-indent: 9999999px;
+	background: url("./assets/expand.svg") center center no-repeat;
+	opacity: 0.8;
+	transition: opacity 0.3s ease;
+}
+
+.upload-progress-tracker .maximize-btn.expanded {
+	background: url("./assets/collapse.svg") center center no-repeat;
+}
+
+.upload-progress-tracker .maximize-btn:hover {
+	opacity: 1;
+}
+
+.upload-progress-tracker .uploads-progress-bar {
+	position: absolute;
+	left: 0;
+	top: 85px;
+	height: 2px;
+	background: #607D8B;
+	opacity: 1;
+	transition:
+			width 0.3s ease,
+			opacity 0.3s ease;
+}
+
+.upload-progress-tracker.expanded .uploads-progress-bar {
+	opacity: 0;
+}
+
+.upload-progress-tracker.expanded {
+	background: #fff;
+}
+
+.upload-progress-tracker .file-progress-wrapper {
+	height: 0;
+	opacity: 0;
+	overflow: hidden;
+	transition:
+			height 0.3s ease,
+			opacity 0.3s ease;
+	border-top: 1px solid #ddd;
+	margin-top: 15px;
+}
+
+.upload-progress-tracker.expanded .file-progress-wrapper {
+	height: auto;
+	opacity: 1;
+}
+
+.upload-progress-tracker .file-progress {
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+.upload-progress-tracker .file-progress .file-details {
+	flex: 1;
+	margin: 5px 5px 5px 0;
+}
+
+.upload-progress-tracker .file-progress .file-details p {
+	padding-right: 30px;
+	position: relative;
+	align-items: center;
+	font-size: 0.8em;
+	height: 25px;
+	color: #565656;
+	margin: 10px 0;
+}
+
+.upload-progress-tracker .file-progress .file-details p .file-name {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	float: left;
+	margin-top: 4px;
+	display: inline-block;
+	flex: 1;
+	/* 40px off because file status takes max 35px wide plus 5 of gap */
+	max-width: calc(100% - 40px);
+}
+
+.upload-progress-tracker .file-progress .file-details p .file-ext {
+	margin-top: 4px;
+}
+
+.upload-progress-tracker .file-progress .file-details p .status {
+	overflow: hidden;
+	text-indent: -9999999px;
+	height: 20px;
+	width: 20px;
+	margin-right: 10px;
+	float: left;
+}
+
+.upload-progress-tracker .file-progress .file-details p .status.uploading {
+	text-indent: unset;
+	width: 35px;
+	position: absolute;
+	right: 0;
+	top: 5px;
+	text-align: right;
+	margin-right: 0;
+}
+
+.upload-progress-tracker .file-progress .file-details p .status.failed {
+	background: url("./assets/failed.svg") center center/100% 100% no-repeat;
+}
+
+.upload-progress-tracker .file-progress .file-details p .status.completed {
+	background: url("./assets/completed.svg") center center/100% 100% no-repeat;
+}
+
+.upload-progress-tracker .file-progress .file-details p .status.paused {
+	background: url("./assets/paused-indicator.svg") center center/100% 100% no-repeat;
+	right: auto;
+	left: 0;
+}
+
+.upload-progress-tracker .file-progress .file-details::after {
+	content: '';
+	width: 100%;
+	height: 2px;
+	background: #ddd;
+	display: block;
+	position: absolute;
+	bottom: 5px;
+	left: 0;
+	z-index: 1;
+}
+
+.upload-progress-tracker .file-progress .file-details .progress-bar {
+	height: 2px;
+	background: #607D8B;
+	position: absolute;
+	bottom: 5px;
+	left: 0;
+	z-index: 2;
+}
+
+.upload-progress-tracker .file-progress .file-actions {
+	min-width: 45px;
+	display: flex;
+	justify-content: center;
+}
+
+.upload-progress-tracker .file-progress .file-actions button {
+	height: 50px;
+	text-align: center;
+	padding: 36px 0 0;
+	font-size: 0.7em;
+	color: #607D8B;
+	width: 40px;
+	min-width: 40px;
+	margin-left: 5px;
+}
+
+.upload-progress-tracker .file-progress .file-actions button.clear-btn {
+	background: url("./assets/clear.svg") center 42%/20px 20px no-repeat;
+}
+.upload-progress-tracker .file-progress .file-actions button.retry-btn {
+	background: url("./assets/retry.svg") center 42%/20px 20px no-repeat;
+}
+.upload-progress-tracker .file-progress .file-actions button.cancel-btn {
+	background: url("./assets/paused.svg") center 42%/20px 20px no-repeat;
+}
+.upload-progress-tracker .file-progress .file-actions button.resume-btn {
+	background: url("./assets/resume.svg") center 42%/20px 20px no-repeat;
+}
