@@ -1,0 +1,348 @@
+class DateTime {
+  #locale = 'default';
+  #Date = null;
+  
+  constructor(...args) {
+    const date = new Date(...args);
+    
+    if(date.toString() === 'Invalid Date') {
+      throw new Error(`Invalid Date: "${args}"`);
+    }
+    
+    this.#Date = date;
+  }
+  
+  static get weekInMilliseconds() {
+    return 604800000;
+  }
+  
+  static get dayInMilliseconds() {
+    return 86400000;
+  }
+  
+  static get hourInMilliseconds() {
+    return 3600000;
+  }
+  
+  static get minuteInMilliseconds() {
+    return 60000;
+  }
+  
+  static get quarteInMilliseconds() {
+    return 7884000000;
+  }
+  
+  static get monthInMilliseconds() {
+    return 2629800000;
+  }
+  
+  static get now() {
+    return new DateTime(Date.now());
+  }
+
+  static parse(...args) {
+    return Date.parse(...args);
+  }
+  
+  static daysOfTheWeek(locale = 'default', format = 'long') {
+    const weekDays = Array.from({length: 7});
+    const date = new Date();
+    
+    for(let i=1; i<=7; i++) {
+      weekDays[date.getDay()] = date.toLocaleString(locale, { weekday: format});
+      date.setDate(date.getDate() + 1);
+    }
+    
+    Object.freeze(weekDays);
+    
+    return weekDays;
+  }
+  
+  static isLeapYear(year) {
+    year = year ?? (new Date()).getFullYear();
+
+    if(`${year}`.length !== 4 || typeof year !== 'number' ) {
+      return false;
+    }
+
+    return year % 100 === 0 ? year % 400 === 0 : year % 4 === 0;
+  }
+
+  static monthSizes(year) {
+    return Object.freeze(
+      [31, (DateTime.isLeapYear(year) ? 29 : 28), 
+      31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    );
+  }
+  
+  get locale() {
+    return this.#locale;
+  }
+
+  set locale(newLocale) {
+    this.#locale = newLocale;
+  }
+  
+  get year() {
+    return this.#Date.getFullYear();
+  }
+  
+  get month() {
+    return this.#Date.getMonth() + 1;
+  }
+  
+  get dayOfTheWeek() {
+    return this.#Date.getDay() + 1;
+  }
+  
+  get date() {
+    return this.dayOfTheMonth;
+  }
+  
+  get dayOfTheMonth() {
+    return this.#Date.getDate();
+  }
+  
+  get dayOfTheMonth() {
+    return this.#Date.getDate();
+  }
+  
+  get hours() {
+    return this.#Date.getHours();
+  }
+  
+  get minutes() {
+    return this.#Date.getMinutes();
+  }
+  
+  get seconds() {
+    return this.#Date.getSeconds();
+  }
+  
+  get milliseconds() {
+    return this.#Date.getMilliseconds();
+  }
+  
+  get week() {
+    const firstDayOfTheYear = new Date(this.#Date.getFullYear(), 0, 1);
+    const pastDaysOfYear = (this.#Date - firstDayOfTheYear) / 86400000;
+
+    return Math.ceil((pastDaysOfYear + firstDayOfTheYear.getDay() + 1) / 7)
+  }
+  
+  get monthShort() {
+    return this.#Date.toLocaleString(this.#locale, { month: 'short'});
+  }
+
+  get monthLong() {
+    return this.#Date.toLocaleString(this.#locale, { month: 'long'});
+  }
+
+  get dayOfTheWeekLong() {
+    return this.#Date.toLocaleString(this.#locale, { weekday: 'long'});
+  }
+
+  get dayOfTheWeekShort() {
+    return this.#Date.toLocaleString(this.#locale, { weekday: 'short'});
+  }
+  
+  get dayOfTheWeek() {
+    return this.#Date.getDay() + 1;
+  }
+  
+  get timestamp() {
+    return this.#Date.getTime();
+  }
+  
+  get utc() {
+    return new DateTime(
+      Date.UTC(this.year, this.month, this.date, this.hours, this.minutes, this.seconds, this.milliseconds)
+    );
+  }
+  
+  get set() {
+    const date = new Date(this.timestamp);
+    
+    return {
+      date: (value) => new DateTime(date.setDate(value)),
+      dayOfTheMonth: (value) => this.date(value),
+      month: (value) => new DateTime(date.setMonth(value)),
+      year: (value) => new DateTime(date.setFullYear(value)),
+      hours: (value) => new DateTime(date.setHours(value)),
+      minutes: (value) => new DateTime(date.setMinutes(value)),
+      seconds: (value) => new DateTime(date.setSeconds(value)),
+      milliseconds: (value) => new DateTime(date.setMilliseconds(value))
+    }
+  }
+  
+  get amPm() {
+    return this.#Date.toLocaleString('en', {hour: '2-digit'}).split(' ')[1];
+  }
+  
+  add(value) {
+    const date = new Date(this.timestamp);
+
+    return {
+      get days() {
+        return new DateTime(date.setDate(date.getDate() + value));
+      },
+      get months() {
+        return new DateTime(date.setMonth(date.getMonth() + value));
+      },
+      get years() {
+        return new DateTime(date.setFullYear(date.getFullYear() + value));
+      },
+      get hours() {
+        return new DateTime(date.setHours(date.getHours() + value));
+      },
+      get minutes() {
+        return new DateTime(date.setMinutes(date.getMinutes() + value));
+      },
+      get seconds() {
+        return new DateTime(date.setSeconds(date.getSeconds() + value));
+      },
+      get milliseconds() {
+        return new DateTime(date.setMilliseconds(date.getMilliseconds() + value));
+      },
+    }
+  }
+
+  subtract(value) {
+    const date = new Date(this.timestamp);
+
+    return {
+      get days() {
+        return new DateTime(date.setDate(date.getDate() - value));
+      },
+      get months() {
+        return new DateTime(date.setMonth(date.getMonth() - value));
+      },
+      get years() {
+        return new DateTime(date.setFullYear(date.getFullYear() - value));
+      },
+      get hours() {
+        return new DateTime(date.setHours(date.getHours() - value));
+      },
+      get minutes() {
+        return new DateTime(date.setMinutes(date.getMinutes() - value));
+      },
+      get seconds() {
+        return new DateTime(date.setSeconds(date.getSeconds() - value));
+      },
+      get milliseconds() {
+        return new DateTime(date.setMilliseconds(date.getMilliseconds() - value));
+      },
+    }
+  }
+  
+  format(formatStr) {
+    return formatStr
+      .replace(/\bYYYY\b/, this.year)
+      .replace(/\bYYY\b/, this.yearShort)
+      .replace(/\bWW\b/, this.week.toString().padStart(2, '0'))
+      .replace(/\bW\b/, this.week)
+      .replace(/\bDDDD\b/, this.dayOfTheWeekLong)
+      .replace(/\bDDD\b/, this.dayOfTheWeekShort)
+      .replace(/\bDD\b/, this.date.toString().padStart(2, '0'))
+      .replace(/\bD\b/, this.date)
+      .replace(/\bMMMM\b/, this.monthLong)
+      .replace(/\bMMM\b/, this.monthShort)
+      .replace(/\bMM\b/, this.month.toString().padStart(2, '0'))
+      .replace(/\bM\b/, this.month)
+      .replace(/\bHH\b/, this.hours.toString().padStart(2, '0'))
+      .replace(/\bH\b/, this.hours)
+      .replace(/\bh\b/, this.amPm === 'AM' 
+               ? `${this.hours}`.padStart(2, '0') 
+               : `${this.hours % 12}`.padStart(2, '0'))
+      .replace(/\bh\b/, this.amPm === 'AM' 
+               ? this.hours 
+               : this.hours % 12)
+      .replace(/\bmm\b/, this.minutes.toString().padStart(2, '0'))
+      .replace(/\bm\b/, this.minutes)
+      .replace(/\bss\b/, this.seconds.toString().padStart(2, '0'))
+      .replace(/\bs\b/, this.seconds)
+      .replace(/\bS\b/, this.milliseconds)
+      .replace(/\ba\b/, this.#Date
+               .toLocaleString(this.locale, {hour: '2-digit'})
+               .replace(
+                  this.#Date.toLocaleString(this.locale, {hour: '2-digit', hour12: false}), 
+                  ''
+                ).trim())
+  }
+  
+  localeFormat(options = {}) {
+    return this.#Date.toLocaleString(this.locale, options);
+  }
+  
+  get relativeFormat() {
+    const rtf = new Intl.RelativeTimeFormat("en", {
+        localeMatcher: "best fit",
+        numeric: "auto",
+        style: "long"
+    });
+    const diff = DateTime.now.differenceFrom(this);
+
+    return {
+      days: rtf.format(diff.days, "day"),
+      months: rtf.format(diff.months, "month"),
+      weeks: rtf.format(diff.weeks, "week"),
+      quarters: rtf.format(diff.quarters, "quarter"),
+      years: rtf.format(diff.years, "year"),
+      hours: rtf.format(diff.hours, "hours"),
+      minutes: rtf.format(diff.minutes, "minute"),
+      seconds: rtf.format(diff.seconds, "second")
+    }
+  }
+  
+  differenceFrom(date = null) {
+    const {timestamp, month, year, hours} = date instanceof DateTime ? date : new DateTime(date);
+    
+    return {
+      days: Math.round((this.timestamp - timestamp) / DateTime.dayInMilliseconds),
+      years: Math.round((this.timestamp - timestamp) / (DateTime.dayInMilliseconds * 365)),
+      months: Math.round((this.timestamp - timestamp) / DateTime.monthInMilliseconds),
+      weeks: Math.round((this.timestamp - timestamp) / DateTime.weekInMilliseconds),
+      quarters: Math.round((this.timestamp - timestamp) / DateTime.quarteInMilliseconds),
+      hours: Math.round((this.timestamp - timestamp) / DateTime.hourInMilliseconds),
+      minutes: Math.round((this.timestamp - timestamp) / DateTime.minuteInMilliseconds),
+      seconds: Math.round((this.timestamp - timestamp) / 1000)
+    }
+  }
+  
+  is() {
+    const thisDate = this;
+
+    const getTimestamp = date => 
+       date instanceof DateTime ? date.timestamp : date.getTime();
+
+    return {
+      before: (date) => thisDate.timestamp < getTimestamp(date),
+      after: (date) => thisDate.timestamp > getTimestamp(date),
+      equalTo: (date) => thisDate.timestamp === getTimestamp(date),
+      inRange: (date1, date2) => thisDate.timestamp > getTimestamp(date1) &&
+        thisDate.timestamp <= getTimestamp(date2),
+      weekend: () => [7, 1].includes(this.dayOfTheWeek),
+      weekdays: () => [2, 3, 4, 5, 6].includes(this.dayOfTheWeek),
+      am: () => this.amPm === 'AM',
+      pm: () => this.amPm === 'PM',
+      future: () => thisDate.timestamp > Date.now(),
+      past: () => thisDate.timestamp < Date.now(),
+      leapYear: () => DateTime.isLeapYear(thisDate.year),
+      monday: () => this.dayOfTheWeek === 2,
+      tuesday: () => this.dayOfTheWeek === 3,
+      wednesday: () => this.dayOfTheWeek === 4,
+      thursday: () => this.dayOfTheWeek === 5,
+      friday: () => this.dayOfTheWeek === 6,
+      saturday: () => this.dayOfTheWeek === 7,
+      sunday: () => this.dayOfTheWeek === 1,
+      firstQuarter: () => [1, 2, 3].includes(this.month),
+      secondQuarter: () => [4, 5, 6].includes(this.month),
+      thirdQuarter: () => [7, 8, 9].includes(this.month),
+      forthQuarter: () => [10, 11, 12].includes(this.month),
+    }
+  }
+  
+  clone() {
+    return new DateTime(this.timestamp);
+  }
+}
