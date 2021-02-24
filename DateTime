@@ -1,3 +1,9 @@
+const DateTimeSettings =  Object.seal({
+  locale: 'default',
+  calendar: 'default',
+  timezone: 'UTC'
+});
+
 class DateTime {
   #locale = 'default';
   #Date = null;
@@ -61,7 +67,7 @@ class DateTime {
   static isLeapYear(year) {
     year = year ?? (new Date()).getFullYear();
 
-    if(`${year}`.length !== 4 || typeof year !== 'number' ) {
+    if(`${year}`.length !== 4 || !isNaN(year) ) {
       return false;
     }
 
@@ -124,8 +130,8 @@ class DateTime {
   }
   
   get week() {
-    const firstDayOfTheYear = new Date(this.#Date.getFullYear(), 0, 1);
-    const pastDaysOfYear = (this.#Date - firstDayOfTheYear) / 86400000;
+    const firstDayOfTheYear = new Date(this.year, 0, 1);
+    const pastDaysOfYear = (this.timestamp - firstDayOfTheYear) / DateTime.dayInMilliseconds;
 
     return Math.ceil((pastDaysOfYear + firstDayOfTheYear.getDay() + 1) / 7)
   }
@@ -154,13 +160,17 @@ class DateTime {
     return this.#Date.getTime();
   }
   
+  get amPm() {
+    return this.#Date.toLocaleString('en', {hour: '2-digit'}).split(' ')[1];
+  }
+  
   get utc() {
     return new DateTime(
       Date.UTC(this.year, this.month, this.date, this.hours, this.minutes, this.seconds, this.milliseconds)
     );
   }
   
-  get set() {
+  set() {
     const date = new Date(this.timestamp);
     
     return {
@@ -173,10 +183,6 @@ class DateTime {
       seconds: (value) => new DateTime(date.setSeconds(value)),
       milliseconds: (value) => new DateTime(date.setMilliseconds(value))
     }
-  }
-  
-  get amPm() {
-    return this.#Date.toLocaleString('en', {hour: '2-digit'}).split(' ')[1];
   }
   
   add(value) {
@@ -275,7 +281,7 @@ class DateTime {
   }
   
   get relativeFormat() {
-    const rtf = new Intl.RelativeTimeFormat("en", {
+    const rtf = new Intl.RelativeTimeFormat(this.locale, {
         localeMatcher: "best fit",
         numeric: "auto",
         style: "long"
