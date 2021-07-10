@@ -1,0 +1,23 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  position: relative;
+
+  span {
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+    color: #444;
+    padding: 0 5px;
+  }
+
+  input {
+    height: 40px;
+    border: none;
+    appearance: none;
+    background: #f2f2f2;
+    border-radius: 3px;
+    padding: 0 15px;
+    outline-color: #737bd7;
+  }
+}
