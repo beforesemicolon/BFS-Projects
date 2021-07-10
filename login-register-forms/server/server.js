@@ -4,6 +4,7 @@ const path = require('path');
 const multer = require('multer');
 const {engine} = require('@beforesemicolon/html-plus');
 const {Field} = require('../src/tags/field');
+const {FormPageHeader} = require('../src/tags/formPageHeader');
 const {registerService} = require('./register.service');
 const session = require('express-session');
 
@@ -13,6 +14,7 @@ const upload = multer();
 (async () => {
   app.use(session({
     name: 'session-id',
+    // secret: process.env.SESSION_SECRET,
     secret: 'secret',
     saveUninitialized: false,
     resave: false
@@ -69,7 +71,7 @@ const upload = multer();
   })
   
   await engine(app, path.resolve(__dirname, '../src'), {
-    customTags: [Field],
+    customTags: [Field, FormPageHeader],
     onPageRequest(req) {
       return {user: req.session.user}
     }

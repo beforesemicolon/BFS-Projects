@@ -65,15 +65,15 @@ class RegisterService {
     })
   
     if (existingUser) {
-      if (existingUser.username === info.username && existingUser.email !== info.email) {
-        return {
-          errorMessage: 'This username is already taken',
-          errorField: 'username'
-        }
-      } else {
+      if (existingUser.email === info.email) {
         return {
           errorMessage: 'User already exists',
           errorField: 'email'
+        }
+      } else if(existingUser.username === info.username) {
+        return {
+          errorMessage: 'This username is already taken',
+          errorField: 'username'
         }
       }
     }
@@ -82,10 +82,12 @@ class RegisterService {
       id: uniqueAlphaNumericId(),
       ...info
     })
+    
+    return true;
   }
   
   findUser(email) {
-    return users.find(usr => usr.email === email);
+    return users.find(usr => usr.email === email) || null;
   }
 }
 

@@ -4,7 +4,8 @@
 <include partial="layout" data="{title: 'Login'}">
   <link rel="stylesheet" href="login.scss" inject-id="style">
 
-  <h2>Login</h2>
+  <form-page-header title="Login"
+                    link="{path: '/register', label: 'register'}"></form-page-header>
 
   <form id="login-form" action="/login" method="post" enctype="multipart/form-data" novalidate>
     <p class="error-message" #if="this.errorMessage">{errorMessage}</p>
