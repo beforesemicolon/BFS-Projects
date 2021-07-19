@@ -83,7 +83,10 @@ class RegisterService {
       ...info
     })
     
-    return true;
+    return {
+      errorMessage: '',
+      errorField: ''
+    }
   }
   
   findUser(email) {

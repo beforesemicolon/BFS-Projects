@@ -10,7 +10,7 @@
   <form id="login-form" action="/login" method="post" enctype="multipart/form-data" novalidate>
     <p class="error-message" #if="this.errorMessage">{errorMessage}</p>
 
-    <field label="Email" type="email" name="email" value="{this.email ?? ''}" required pattern="{emailPattern}"></field>
+    <field label="Email" type="email" name="email" value="{this.email ?? ''}" required pattern="{emailPattern}" autofocus></field>
     <field label="Password" type="password" name="password" required pattern="{passwordPattern}"></field>
     <p class="password-reset">
       <a href="">reset password</a>

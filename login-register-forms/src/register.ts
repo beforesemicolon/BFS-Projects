@@ -35,6 +35,8 @@
 				currentFieldset.style.display = 'none';
 				fieldsetList[index].style.display = 'block';
 				currentFieldset = fieldsetList[index];
+				// immediately focus on the first input field in the fieldset
+				currentFieldset.querySelector('input')?.focus();
 			}
 
 			nextBtn.addEventListener('click', () => {
@@ -45,6 +47,18 @@
 			prevBtn.addEventListener('click', () => {
 				currentSetIndex = (currentSetIndex - 1) % fieldsetList.length;
 				navigate(currentSetIndex);
+			})
+
+			registerForm.addEventListener('submit', (event) => {
+				// if the user presses the return key in the middle of
+				// form filling it should detect and make sure the last
+				// fieldset is showing before trying to submit
+				// otherwise we simply move to the next fieldset to be filled
+				if (currentSetIndex < fieldsetList.length - 1) {
+					event.preventDefault();
+					currentSetIndex += 1;
+					navigate(currentSetIndex);
+				}
 			})
 
 			navigate(currentSetIndex);

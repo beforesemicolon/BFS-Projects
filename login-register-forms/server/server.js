@@ -39,10 +39,11 @@ const upload = multer();
     
     if (!result.errorMessage) {
       result = registerService.saveUser(req.body);
-  
+      
       // if the error is in the email field is because the user
       // already exists and should login
-      if (result.errorField === 'email') {
+      // it should login is there is no error as well
+      if (!result.errorField || result.errorField === 'email') {
         return res.redirect('/login');
       }
     }
@@ -58,7 +59,7 @@ const upload = multer();
       /.{8,35}$/.test(password)
     ) {
       const user = registerService.findUser(email);
-  
+
       if (user && user.password === password) {
         req.session.user = user;
         return res.redirect('/');
