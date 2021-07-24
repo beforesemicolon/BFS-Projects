@@ -5,11 +5,22 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>Audio Player</title>
+	<style>
+		body {
+			width: 100vw;
+			height: 100vh;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: #fb946d;
+			margin: 0;
+		}
+	</style>
 </head>
 <body>
 	<audio-player title="My cool super long named audio sound"
 	              src="./audio.mp3"
-	              preload autoplay muted
+	              preload autoplay
 	               ></audio-player>
 
 	<script src="audio-player.js"></script>

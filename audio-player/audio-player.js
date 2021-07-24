@@ -85,7 +85,7 @@
         const perc = (this.dataArray[i] * 100) / 255;
         const h = (perc * this.canvas.height) / 100;
         
-        this.canvasCtx.fillStyle = `rgba(${this.dataArray[i]}, 255, 100)`;
+        this.canvasCtx.fillStyle = `rgba(${this.dataArray[i]}, 255, 200)`;
         this.canvasCtx.fillRect(x, this.canvas.height - h, sliceWidth, h);
         
         x += (sliceWidth + gap);
@@ -380,7 +380,7 @@
     render() {
       this.shadowRoot.innerHTML = `
        ${this.style()}
-        <figure class="audio-player" style="width: 300px">
+        <figure class="audio-player">
           <figcaption class="audio-name"></figcaption>
           <audio style="display: none"></audio>
           <button class="play-btn" type="button">play</button>
@@ -408,7 +408,7 @@
       
       this.canvasCtx = this.canvas.getContext("2d");
       this.titleElement.textContent = this.attributes.getNamedItem('src')
-        ? this.attributes.getNamedItem('title') ?? 'untitled'
+        ? this.attributes.getNamedItem('title').value ?? 'untitled'
         : 'No Audio Source Provided';
       this.volumeBar.value = this.volume;
       
