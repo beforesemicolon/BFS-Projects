@@ -155,7 +155,7 @@
     }
     
     getTimeString(time) {
-      const secs = parseInt(`${time % 60}`, 10);
+      const secs = `${parseInt(`${time % 60}`, 10)}`.padStart(2, '0');
       const min = parseInt(`${(time / 60) % 60}`, 10);
   
       return `${min}:${secs}`;
