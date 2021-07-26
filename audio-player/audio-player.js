@@ -4,6 +4,10 @@
     volume = 0.4;
     prevVolume = 0.4;
     initialized = false;
+    barWidth = 3;
+    barGap = 1;
+    bufferPercentage = 75;
+    nonAudioAttributes = new Set(['title', 'bar-width', 'bar-gap', 'buffer-percentage']);
     
     constructor() {
       super();
@@ -13,30 +17,56 @@
     }
     
     static get observedAttributes() {
-      return ['src', 'muted', 'title', 'crossorigin', 'loop', 'preload', 'autoplay'];
+      return [
+        // audio tag attributes
+        // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/audio
+        'src', 'muted', 'crossorigin', 'loop', 'preload', 'autoplay',
+        // the name of the audio
+        'title',
+        // the size of the frequency bar
+        'bar-width',
+        // the size of the gap between the bars
+        'bar-gap',
+        // the percentage of the frequency buffer data to represent
+        // if the dataArray contains 1024 data points only a percentage of data will
+        // be used to draw on the canvas
+        'buffer-percentage'
+      ];
     }
     
     async attributeChangedCallback(name, oldValue, newValue) {
-      if (name === 'src') {
-        this.initialized = false;
-        this.render();
-        this.initializeAudio();
-      }
-      
-      if (name === 'muted') {
-        this.toggleMute(Boolean(this.audio?.getAttribute('muted')));
-      }
-      
-      if (name === 'title') {
-        this.titleElement.textContent = newValue;
+      switch (name) {
+        case 'src':
+          this.initialized = false;
+          this.render();
+          this.initializeAudio();
+          break;
+        case 'muted':
+          this.toggleMute(Boolean(this.audio?.getAttribute('muted')));
+          break;
+        case 'title':
+          this.titleElement.textContent = newValue;
+          break;
+        case 'bar-width':
+          this.barWidth = Number(newValue) || 3;
+          break;
+        case 'bar-gap':
+          this.barGap = Number(newValue) || 1;
+          break;
+        case 'buffer-percentage':
+          this.bufferPercentage = Number(newValue) || 75;
+          break;
+        default:
       }
       
       this.updateAudioAttributes(name, newValue);
     }
     
     updateAudioAttributes(name, value) {
-      if (!this.audio || name === 'title') return;
+      if (!this.audio || this.nonAudioAttributes.has(name)) return;
       
+      // if the attribute was explicitly set on the audio-player tag
+      // set it otherwise remove it
       if (this.attributes.getNamedItem(name)) {
         this.audio.setAttribute(name, value ?? '')
       } else {
@@ -76,19 +106,29 @@
       this.canvasCtx.fillStyle = "rgba(0, 0, 0, 0)";
       this.canvasCtx.fillRect(0, 0, this.canvas.width, this.canvas.height);
       
-      const sliceWidth = 3;
-      const gap = 2;
-      const barCount = this.bufferLength / ((sliceWidth + gap) - gap);
+      const barCount = (this.canvas.width / (this.barWidth + this.barGap)) - this.barGap;
+      const bufferSize = (this.bufferLength * this.bufferPercentage) / 100;
       let x = 0;
       
+      // this is a loss representation of the frequency
+      // some data are loss to fit the size of the canvas
       for (let i = 0; i < barCount; i++) {
-        const perc = (this.dataArray[i] * 100) / 255;
-        const h = (perc * this.canvas.height) / 100;
+        // get percentage of i value
+        const iPerc = Math.round((i * 100) / barCount);
+        // what the i percentage maps to in the frequency data
+        const pos = Math.round((bufferSize * iPerc) / 100);
+        const frequency = this.dataArray[pos];
+        // frequency value in percentage
+        const frequencyPerc = (frequency * 100) / 255;
+        // frequency percentage value in pixel in relation to the canvas height
+        const barHeight = (frequencyPerc * this.canvas.height) / 100;
+        // flip the height so the bar is drawn from the bottom
+        const y = this.canvas.height - barHeight;
         
-        this.canvasCtx.fillStyle = `rgba(${this.dataArray[i]}, 255, 200)`;
-        this.canvasCtx.fillRect(x, this.canvas.height - h, sliceWidth, h);
+        this.canvasCtx.fillStyle = `rgba(${frequency}, 255, 100)`;
+        this.canvasCtx.fillRect(x, y, this.barWidth, barHeight);
         
-        x += (sliceWidth + gap);
+        x += (this.barWidth + this.barGap);
       }
       
       requestAnimationFrame(this.updateFrequency.bind(this))
@@ -407,6 +447,10 @@
       this.canvas = this.shadowRoot.querySelector('canvas');
       
       this.canvasCtx = this.canvas.getContext("2d");
+      // support retina display on canvas for a more crispy/HD look
+      const scale = window.devicePixelRatio;
+      this.canvas.width = Math.floor(this.canvas.width* scale);
+      this.canvas.height = Math.floor(this.canvas.height * scale);
       this.titleElement.textContent = this.attributes.getNamedItem('src')
         ? this.attributes.getNamedItem('title').value ?? 'untitled'
         : 'No Audio Source Provided';
