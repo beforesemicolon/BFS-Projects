@@ -3,8 +3,6 @@ const http = require('http');
 const path = require('path');
 const multer = require('multer');
 const {engine} = require('@beforesemicolon/html-plus');
-const {Field} = require('../src/tags/field');
-const {FormPageHeader} = require('../src/tags/formPageHeader');
 const {registerService} = require('./register.service');
 const session = require('express-session');
 
@@ -72,7 +70,7 @@ const upload = multer();
   })
   
   await engine(app, path.resolve(__dirname, '../src'), {
-    customTags: [Field, FormPageHeader],
+    // check hp.config.js file for more config details
     onPageRequest(req) {
       return {user: req.session.user}
     }
@@ -81,6 +79,6 @@ const upload = multer();
   const server = http.createServer(app);
   
   server.listen(3000, () => {
-    console.log('server live on port 3000')
+    console.log('server live on port http://localhost:3000/')
   })
 })()

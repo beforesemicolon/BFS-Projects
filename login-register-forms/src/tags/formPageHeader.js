@@ -1,3 +1,6 @@
+const {importStyle} = require("@beforesemicolon/html-plus");
+const path = require("path");
+
 class FormPageHeader {
   constructor(node) {
     this.title = node.attributes.title ?? 'Form Page';
@@ -8,6 +11,10 @@ class FormPageHeader {
     return {
       link: {execute: true}
     };
+  }
+  
+  static get style() {
+    return importStyle(path.resolve(__dirname, './formPageHeader.scss'))
   }
   
   render() {

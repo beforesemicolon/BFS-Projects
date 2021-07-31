@@ -1,4 +1,5 @@
-const {composeTagString} = require('@beforesemicolon/html-plus');
+const {composeTagString, importStyle} = require('@beforesemicolon/html-plus');
+const path = require('path');
 
 class Field {
   constructor(node) {
@@ -10,6 +11,10 @@ class Field {
       ...node.attributes
     }
     this.extraContent = node.renderChildren();
+  }
+  
+  static get style() {
+    return importStyle(path.resolve(__dirname, './field.scss'))
   }
   
   render() {

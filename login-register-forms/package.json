@@ -4,13 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon --watch . -e '*' --exec node server/server.js"
+    "local": "nodemon --watch . -e '*' --exec node server/server.js",
+    "start": "NODE_ENV=production node server/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@beforesemicolon/html-plus": "^0.5.0",
+    "@beforesemicolon/html-plus": "^0.6.0",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
     "multer": "^1.4.2"
