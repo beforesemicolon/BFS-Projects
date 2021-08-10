@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Web Component</title>
+	<link rel="stylesheet" href="style.css">
+</head>
+<body>
+	<header class="wrapper">
+		<h1 id="logo">Before Semicolon</h1>
+		<nav>
+			<ul>
+				<li>Blog</li>
+				<li>Videos</li>
+				<li>Contact</li>
+			</ul>
+		</nav>
+	</header>
+
+	<section role="banner" id="banner">
+		<h2>Learn what it takes to become a Web Developer</h2>
+		<button>Start Now</button>
+	</section>
+
+	<main class="wrapper">
+		<blog-post-list id="blog-posts">
+			<h2 slot="heading">Latest Post</h2>
+		</blog-post-list>
+	</main>
+
+	<footer class="wrapper">
+		<div class="menu-list">
+			<h3>Learn</h3>
+			<ul role="menu">
+				<li>Videos</li>
+				<li>Articles</li>
+				<li>Tutoring</li>
+				<li>1 on 1</li>
+			</ul>
+		</div>
+		<div class="menu-list">
+			<h3>Products/Service</h3>
+			<ul role="menu">
+				<li>HTML Plus</li>
+				<li>BFS Framework</li>
+				<li>BFS CMS</li>
+				<li>Pricing</li>
+			</ul>
+		</div>
+		<div class="menu-list">
+			<h3>Company</h3>
+			<ul role="menu">
+				<li>About</li>
+				<li>Blog</li>
+				<li>Careers</li>
+				<li>Store</li>
+			</ul>
+		</div>
+		<div class="menu-list">
+			<h3>Social</h3>
+			<ul>
+				<li>Youtube</li>
+				<li>Twitter</li>
+				<li>Reddit</li>
+				<li>Instagram</li>
+			</ul>
+		</div>
+		<p class="copyright">copyright &copy; Before Semicolon 2021. All rights reserved.</p>
+	</footer>
+
+	<script src="app.js" type="module"></script>
+</body>
+</html>
