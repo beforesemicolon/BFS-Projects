@@ -1,10 +1,10 @@
-const {importStyle} = require("@beforesemicolon/html-plus");
+const {importStyle, html} = require("@beforesemicolon/html-plus");
 const path = require("path");
 
 class FormPageHeader {
   constructor(node) {
-    this.title = node.attributes.title ?? 'Form Page';
-    this.link = node.attributes.link ?? null;
+    this.title = node.getAttribute('title') ?? 'Form Page';
+    this.link = node.getAttribute('link') ?? null;
   }
   
   static get customAttributes() {
@@ -18,12 +18,12 @@ class FormPageHeader {
   }
   
   render() {
-    return `
+    return html(`
         <header class="form-page-header">
-            <h2>${this.title}</h2>
-            ${this.link && `<a href="${this.link.path}">${this.link.label}</a>`}
+            <h2>{title}</h2>
+            <a #if="link" href="{link.path}">{link.label}</a>
         </header>
-    `;
+    `, this);
   }
 }
 

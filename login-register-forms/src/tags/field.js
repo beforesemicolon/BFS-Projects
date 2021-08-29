@@ -1,16 +1,24 @@
-const {composeTagString, importStyle} = require('@beforesemicolon/html-plus');
+const {html, importStyle, Element} = require('@beforesemicolon/html-plus');
 const path = require('path');
 
 class Field {
+  defaultAttr = {
+    name: 'field',
+    type: 'text',
+    label: 'Field',
+    value: ''
+  }
+  
   constructor(node) {
-    this.attr = {
-      name: 'field',
-      type: 'text',
-      label: 'Field',
-      value: '',
-      ...node.attributes
+    this.node = node;
+    this.label = this.node.getAttribute('label') || 'Field';
+    this.input = new Element('input');
+  
+    for (let attribute of this.node.attributes) {
+      if (attribute.name !== 'label') {
+        this.input.setAttribute(attribute.name, attribute.value || this.defaultAttr[attribute.name])
+      }
     }
-    this.extraContent = node.renderChildren();
   }
   
   static get style() {
@@ -18,15 +26,13 @@ class Field {
   }
   
   render() {
-    const {label, ...attributes} = this.attr;
-    
-    return `
+    return html(`
       <label class="field">
-        <span>${label}</span>
-        ${composeTagString({tagName: 'input', attributes})}
-        ${this.extraContent}
+        <span>{label}</span>
+        {input.outerHTML}
+        {node.innerHTML}
       </label>
-    `
+    `, this)
   }
 }
 
