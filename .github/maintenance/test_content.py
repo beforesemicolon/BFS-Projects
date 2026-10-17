@@ -55,6 +55,12 @@ class ContentTests(unittest.TestCase):
             finally:
                 os.chdir(previous)
 
+    def test_documentation_agent_does_not_create_a_repository_map_cache(self):
+        script = Path(__file__).with_name('content.sh').read_text()
+        agent_command = next(line for line in script.splitlines() if ' agent aider ' in line)
+        self.assertIn('--map-tokens 0', agent_command)
+        self.assertIn('--no-suggest-shell-commands', agent_command)
+
     def test_default_branch_pushes_cannot_invoke_ai(self):
         workflow = Path(__file__).parents[1] / 'workflows/daily-ai-maintenance.yml'
         data = c.guard.yaml.load(workflow.read_text(), Loader=c.guard.WorkflowLoader)
