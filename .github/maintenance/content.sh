@@ -41,7 +41,7 @@ case "$mode" in
       fi
     } > "$RUNNER_TEMP/content-prompt.txt"
     python "$helper/maintenance.py" snapshot "$RUNNER_TEMP/content-snapshot.json" README.md
-    python "$helper/maintenance.py" agent aider --yes --no-check-update --no-show-release-notes --no-gitignore --no-auto-commits --no-pretty --no-stream --chat-history-file "$RUNNER_TEMP/content-history.md" --input-history-file "$RUNNER_TEMP/content-input" --model gpt-4.1 --message-file "$RUNNER_TEMP/content-prompt.txt" README.md
+    python "$helper/maintenance.py" agent aider --yes --no-check-update --no-show-release-notes --no-gitignore --no-auto-commits --map-tokens 0 --no-suggest-shell-commands --no-pretty --no-stream --chat-history-file "$RUNNER_TEMP/content-history.md" --input-history-file "$RUNNER_TEMP/content-input" --model gpt-4.1 --message-file "$RUNNER_TEMP/content-prompt.txt" README.md
     python "$helper/maintenance.py" verify "$RUNNER_TEMP/content-snapshot.json"
     if git diff --quiet HEAD; then
       echo 'AI documentation review completed without a proposed change' >> "$GITHUB_STEP_SUMMARY"
