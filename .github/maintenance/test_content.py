@@ -22,11 +22,6 @@ class ContentTests(unittest.TestCase):
         self.assertEqual(c.source_files(files, 'tutorials-files'), ['tree.js', 'demo/app.js'])
         self.assertEqual(c.source_files(files, 'BFS-Projects'), [])
 
-    def test_issue_scope_is_explicit_and_open(self):
-        for text in ['Improve code', 'docs/README.md', 'README.md.bak']:
-            self.assertFalse(c.supported_issue({'state': 'OPEN', 'title': text}))
-        self.assertTrue(c.supported_issue({'state': 'OPEN', 'title': 'Clarify `README.md`'}))
-        self.assertFalse(c.supported_issue({'state': 'CLOSED', 'title': 'README.md'}))
 
     def test_syntax_check_does_not_execute_snippet_and_strips_secrets(self):
         with patch.object(c.guard, 'content', return_value='throw new Error("never execute");'), patch.dict(os.environ, {'GH_TOKEN': 'x', 'OPENAI_API_KEY': 'y'}), patch.object(c.subprocess, 'run') as run:
@@ -55,31 +50,19 @@ class ContentTests(unittest.TestCase):
             finally:
                 os.chdir(previous)
 
-    def test_documentation_agent_does_not_create_a_repository_map_cache(self):
-        script = Path(__file__).with_name('content.sh').read_text()
-        agent_command = next(line for line in script.splitlines() if ' agent aider ' in line)
-        self.assertIn('--map-tokens 0', agent_command)
-        self.assertIn('--no-suggest-shell-commands', agent_command)
-
-    def test_default_branch_pushes_cannot_invoke_ai(self):
-        workflow = Path(__file__).parents[1] / 'workflows/daily-ai-maintenance.yml'
-        data = c.guard.yaml.load(workflow.read_text(), Loader=c.guard.WorkflowLoader)
-        branches = {'BFS-Projects': 'development', 'javascript-solutions': 'main', 'tutorials-files': 'master'}
-        self.assertEqual(data['on']['push']['branches'], [branches[c.profile()]])
-        condition = data['jobs']['documentation']['if']
-        self.assertIn("(github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')", condition)
-        self.assertIn('github.ref_name == github.event.repository.default_branch', condition)
-
-    def test_workflows_have_no_live_ai_on_pull_request_or_auto_merge(self):
+    def test_content_ci_is_read_only_and_has_no_provider_calls(self):
         root = Path(__file__).parents[1]
-        if not (root / 'workflows').exists():
-            self.skipTest('Template has no installed workflows')
-        for path in (root / 'workflows').glob('*.yml'):
-            text = path.read_text()
-            self.assertNotIn('continue-on-error: true', text)
-            self.assertNotIn('gh pr merge', text)
-            self.assertNotIn('persist-credentials: true', text)
-            self.assertNotIn('MAINTENANCE_HELPER: ${{ runner.temp }}', text)
+        paths = sorted((root / 'workflows').glob('*.yml'))
+        self.assertEqual([path.name for path in paths], ['content-ci.yml'])
+        workflow = paths[0].read_text()
+        data = c.guard.yaml.load(workflow, Loader=c.guard.WorkflowLoader)
+        branches = {'BFS-Projects': 'development', 'javascript-solutions': 'main', 'tutorials-files': 'master'}
+        self.assertEqual(set(data['on']), {'pull_request', 'push', 'workflow_dispatch'})
+        self.assertEqual(data['on']['push']['branches'], [branches[c.profile()]])
+        self.assertEqual(data['permissions'], {'contents': 'read'})
+        self.assertEqual(set(data['jobs']), {'validate'})
+        for forbidden in ['OPENAI_API_KEY', 'aider', 'gh pr', 'gh issue', 'contents: write', 'persist-credentials: true', 'continue-on-error: true']:
+            self.assertNotIn(forbidden, workflow)
 
 
 if __name__ == '__main__':
