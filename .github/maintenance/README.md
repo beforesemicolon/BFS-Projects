@@ -26,7 +26,7 @@ reported as skipped. One open documentation/review-required proposal blocks dupl
 The shared maintenance guard verifies protected file bytes, tracked file sets,
 executable modes, Git HEAD and index. It catches provider failures even when aider
 exits zero. Missing credentials fail a requested AI attempt. No model calls run for
-pull requests. Guards and repository checks must pass again before draft publication.
+pull requests or default-branch pushes. Pushes run validation only. Guards and repository checks must pass again before draft publication.
 No secrets or access settings are added. Package validation receives no GitHub or
 OpenAI environment tokens; checkout credentials are not persisted. These publication
 checks are not a sandbox for executing repository code.

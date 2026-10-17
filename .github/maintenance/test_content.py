@@ -55,6 +55,15 @@ class ContentTests(unittest.TestCase):
             finally:
                 os.chdir(previous)
 
+    def test_default_branch_pushes_cannot_invoke_ai(self):
+        workflow = Path(__file__).parents[1] / 'workflows/daily-ai-maintenance.yml'
+        data = c.guard.yaml.load(workflow.read_text(), Loader=c.guard.WorkflowLoader)
+        branches = {'BFS-Projects': 'development', 'javascript-solutions': 'main', 'tutorials-files': 'master'}
+        self.assertEqual(data['on']['push']['branches'], [branches[c.profile()]])
+        condition = data['jobs']['documentation']['if']
+        self.assertIn("(github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')", condition)
+        self.assertIn('github.ref_name == github.event.repository.default_branch', condition)
+
     def test_workflows_have_no_live_ai_on_pull_request_or_auto_merge(self):
         root = Path(__file__).parents[1]
         if not (root / 'workflows').exists():
